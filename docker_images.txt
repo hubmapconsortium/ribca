@@ -1,0 +1,2 @@
+hubmap/ribca	docker/ribca/Dockerfile	base_directory_build
+hubmap/ribca-prep-convert	docker/conversion/Dockerfile	base_directory_build

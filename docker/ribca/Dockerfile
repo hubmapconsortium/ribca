@@ -21,9 +21,10 @@ RUN conda config --add channels defaults \
     scikit-learn \
     tifffile
 
-COPY ribca /opt/ribca
-
+COPY ribca/download_models.py /opt/ribca/download_models.py
 WORKDIR /opt/ribca
 RUN python download_models.py
+
+COPY ribca /opt/ribca
 
 ENV PYTHONPATH=/opt/ribca/src/multiplexed_image_annotator

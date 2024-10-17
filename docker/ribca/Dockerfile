@@ -26,4 +26,4 @@ COPY ribca /opt/ribca
 WORKDIR /opt/ribca
 RUN python download_models.py
 
-WORKDIR /opt/ribca/src/multiplexed_image_annotator
+ENV PYTHONPATH=/opt/ribca/src/multiplexed_image_annotator

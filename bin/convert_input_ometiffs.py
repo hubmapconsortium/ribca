@@ -20,7 +20,7 @@ def convert_expr_image(expr_image: Path):
     channels = get_channel_names(e)
     with open("marker_list.txt", "w") as f:
         for c in channels:
-            print(c, f)
+            print(c, file=f)
     image_data = e.asarray()
     squeezed = image_data.squeeze
     assert len(squeezed.shape) == 3, "Need only CYX dimensions"

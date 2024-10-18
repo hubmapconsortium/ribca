@@ -22,7 +22,7 @@ def convert_expr_image(expr_image: Path):
         for c in channels:
             print(c, file=f)
     image_data = e.asarray()
-    squeezed = image_data.squeeze
+    squeezed = image_data.squeeze()
     assert len(squeezed.shape) == 3, "Need only CYX dimensions"
     tifffile.imwrite("expr.tiff", squeezed)
 

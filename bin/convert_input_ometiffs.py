@@ -17,7 +17,7 @@ def get_channel_names(image: tifffile.TiffFile) -> list[str]:
 
 def convert_expr_image(expr_image: Path):
     e = tifffile.TiffFile(expr_image)
-    channels = get_channel_names(ef)
+    channels = get_channel_names(e)
     with open("marker_list.txt", "w") as f:
         for c in channels:
             print(c, f)

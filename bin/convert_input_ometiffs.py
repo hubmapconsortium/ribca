@@ -16,12 +16,12 @@ def get_channel_names(image: tifffile.TiffFile) -> list[str]:
 
 
 def convert_expr_image(expr_image: Path):
-    f = tifffile.TiffFile(expr_image)
-    channels = get_channel_names(f)
+    e = tifffile.TiffFile(expr_image)
+    channels = get_channel_names(ef)
     with open("marker_list.txt", "w") as f:
         for c in channels:
             print(c, f)
-    image_data = f.asarray()
+    image_data = e.asarray()
     squeezed = image_data.squeeze
     assert len(squeezed.shape) == 3, "Need only CYX dimensions"
     tifffile.imwrite("expr.tiff", squeezed)

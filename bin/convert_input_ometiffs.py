@@ -57,6 +57,8 @@ def convert_expr_image(expr_image: Path):
     e = tifffile.TiffFile(expr_image)
     mapper = ChannelMapper()
     orig_channels = get_channel_names(e)
+    print("Original channel names:")
+    pprint(orig_channels)
     channels = mapper.map_channel_names(orig_channels)
     print("Adjusted channel names:")
     pprint(channels)

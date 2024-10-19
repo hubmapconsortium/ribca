@@ -2,6 +2,7 @@
 import csv
 from argparse import ArgumentParser
 from pathlib import Path
+from pprint import pprint
 
 import lxml.etree
 import tifffile
@@ -22,13 +23,24 @@ def find_channel_name_mapping() -> Path:
     raise FileNotFoundError("\n".join(message_pieces))
 
 
-def read_channel_name_mapping() -> dict[str, str]:
-    mapping = {}
-    with open(find_channel_name_mapping(), newline="") as f:
-        r = csv.reader(f)
-        for row in r:
-            mapping[row[0]] = row[1]
-    return mapping
+class ChannelMapper:
+    mapping: dict[str, str]
+
+    def __init__(self):
+        self.mapping = {}
+        with open(find_channel_name_mapping(), newline="") as f:
+            r = csv.reader(f)
+            for row in r:
+                self.mapping[row[0]] = row[1]
+
+    def map_channel_name(self, name: str) -> str:
+        c = self.mapping.get(name, name)
+        if c.lower().startswith("dapi"):
+            c = c.split("-")[0]
+        return c
+
+    def map_channel_names(self, names: list[str]) -> list[str]:
+        return [self.map_channel_name(name) for name in names]
 
 
 def get_channel_names(image: tifffile.TiffFile) -> list[str]:
@@ -42,9 +54,9 @@ def get_channel_names(image: tifffile.TiffFile) -> list[str]:
 
 def convert_expr_image(expr_image: Path):
     e = tifffile.TiffFile(expr_image)
+    mapper = ChannelMapper()
     orig_channels = get_channel_names(e)
-    channel_mapping = read_channel_name_mapping()
-    channels = [channel_mapping.get(c, c) for c in orig_channels]
+    channels = mapper.map_channel_names(orig_channels)
     with open("markers.txt", "w") as f:
         for c in channels:
             print(c, file=f)

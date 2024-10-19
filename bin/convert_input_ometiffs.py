@@ -53,20 +53,26 @@ def get_channel_names(image: tifffile.TiffFile) -> list[str]:
 
 
 def convert_expr_image(expr_image: Path):
+    print("Reading", expr_image)
     e = tifffile.TiffFile(expr_image)
     mapper = ChannelMapper()
     orig_channels = get_channel_names(e)
     channels = mapper.map_channel_names(orig_channels)
+    print("Adjusted channel names:")
+    pprint(channels)
     with open("markers.txt", "w") as f:
         for c in channels:
             print(c, file=f)
     image_data = e.asarray()
+    print("Original expression shape:", image_data.shape)
     squeezed = image_data.squeeze()
+    print("New expression shape:", squeezed.shape)
     assert len(squeezed.shape) == 3, "Need only CYX dimensions"
     tifffile.imwrite("expr.tiff", squeezed)
 
 
 def convert_mask_image(mask_image: Path):
+    print("Reading", mask_image)
     m = tifffile.TiffFile(mask_image)
     channels = get_channel_names(m)
     for i, name in enumerate(channels):
@@ -75,6 +81,7 @@ def convert_mask_image(mask_image: Path):
     else:
         raise ValueError("No cell channel found in mask")
     mask_data = m.asarray()
+    print("Mask shape:", mask_data.shape)
     squeezed = mask_data.squeeze()
     cell_mask = squeezed[i]
     tifffile.imwrite("mask.tiff", cell_mask)

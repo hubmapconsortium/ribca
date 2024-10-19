@@ -19,7 +19,8 @@ RUN conda config --add channels defaults \
     scipy \
     scikit-image \
     scikit-learn \
-    tifffile
+    tifffile \
+ && conda clean --all
 
 COPY ribca/download_models.py /opt/ribca/download_models.py
 WORKDIR /opt/ribca

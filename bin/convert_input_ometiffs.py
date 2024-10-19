@@ -45,7 +45,7 @@ def convert_expr_image(expr_image: Path):
     orig_channels = get_channel_names(e)
     channel_mapping = read_channel_name_mapping()
     channels = [channel_mapping.get(c, c) for c in orig_channels]
-    with open("marker_list.txt", "w") as f:
+    with open("markers.txt", "w") as f:
         for c in channels:
             print(c, file=f)
     image_data = e.asarray()
@@ -65,7 +65,7 @@ def convert_mask_image(mask_image: Path):
     mask_data = m.asarray()
     squeezed = mask_data.squeeze()
     cell_mask = squeezed[i]
-    tifffile.imwrite("cell_mask.tiff", cell_mask)
+    tifffile.imwrite("mask.tiff", cell_mask)
 
 
 if __name__ == "__main__":

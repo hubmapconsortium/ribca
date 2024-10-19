@@ -6,6 +6,7 @@ RUN conda install -y \
  && conda clean --all
 
 WORKDIR /opt
+COPY data /opt
 COPY bin /opt
 
 CMD ["/bin/bash"]

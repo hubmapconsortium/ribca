@@ -62,6 +62,17 @@ def convert_expr_image(expr_image: Path):
     channels = mapper.map_channel_names(orig_channels)
     print("Adjusted channel names:")
     pprint(channels)
+
+    # TODO: track this more directly
+    differences = []
+    for orig_ch, new_ch in zip(orig_channels, channels):
+        if orig_ch != new_ch:
+            differences.append((orig_ch, new_ch))
+    if differences:
+        print("Differences (old → new):")
+        for orig_ch, new_ch in differences:
+            print(orig_ch, "→", new_ch)
+
     with open("markers.txt", "w") as f:
         for c in channels:
             print(c, file=f)

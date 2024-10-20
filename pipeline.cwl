@@ -12,6 +12,15 @@ outputs:
   ribca_results_dir:
     type: Directory
     outputSource: ribca/results_dir
+  converted_expr:
+    type: File
+    outputSource: pre-convert/image_file
+  converted_mask:
+    type: File
+    outputSource: pre-convert/mask_file
+  marker_list:
+    type: File
+    outputSource: pre-convert/marker_list_file
 
 steps:
   pre-convert:

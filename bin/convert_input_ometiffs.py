@@ -3,35 +3,58 @@ import csv
 from argparse import ArgumentParser
 from pathlib import Path
 from pprint import pprint
+from typing import NamedTuple
 
 import lxml.etree
 import tifffile
 
+MATCHED_COLOR = "\033[01;32m"
+UNMATCHED_COLOR = "\033[01;31m"
+NO_COLOR = "\033[00m"
+
 channel_mapping_filename = "channel_name_mapping.csv"
-channel_mapping_file_possibilities = [
-    Path("/opt") / channel_mapping_filename,
-    Path(__file__).parent / "data" / channel_mapping_filename,
+known_channels_filename = "ribca_known_channels.txt"
+data_dir_possibilities = [
+    Path("/opt"),
+    Path(__file__).parent / "data",
 ]
 
 
-def find_channel_name_mapping() -> Path:
-    for path in channel_mapping_file_possibilities:
-        if path.is_file():
+def find_data_dir() -> Path:
+    for path in data_dir_possibilities:
+        if (path / channel_mapping_filename).is_file() and (
+            path / known_channels_filename
+        ).is_file():
             return path
-    message_pieces = [f"Couldn't find {channel_mapping_filename} in any of:"]
-    message_pieces.extend([f"\t{path}" for path in channel_mapping_file_possibilities])
+    message_pieces = [f"Couldn't find data directory; tried:"]
+    message_pieces.extend([f"\t{path}" for path in data_dir_possibilities])
     raise FileNotFoundError("\n".join(message_pieces))
+
+
+class MappedChannelData(NamedTuple):
+    new_channels: list[str]
+    channel_differences: set[tuple[str, str]]
+    matched_channels: set[str]
+    unmatched_channels: set[str]
 
 
 class ChannelMapper:
     mapping: dict[str, str]
+    known_channels: set[str]
 
     def __init__(self):
+        data_dir = find_data_dir()
+
         self.mapping = {}
-        with open(find_channel_name_mapping(), newline="") as f:
+        with open(data_dir / channel_mapping_filename, newline="") as f:
             r = csv.reader(f)
             for row in r:
                 self.mapping[row[0]] = row[1]
+
+        self.known_channels = set()
+        with open(data_dir / known_channels_filename) as f:
+            for line in f:
+                self.known_channels.add(line.strip())
 
     def map_channel_name(self, name: str) -> str:
         c = self.mapping.get(name, name)
@@ -39,8 +62,23 @@ class ChannelMapper:
             c = c.split("-")[0]
         return c
 
-    def map_channel_names(self, names: list[str]) -> list[str]:
-        return [self.map_channel_name(name) for name in names]
+    def map_channel_names(self, names: list[str]) -> MappedChannelData:
+        new_channels = []
+        differences = set()
+        for name in names:
+            new_name = self.map_channel_name(name)
+            new_channels.append(new_name)
+            if name != new_name:
+                differences.add((name, new_name))
+        new_channel_set = set(new_channels)
+        matched_channels = new_channel_set & self.known_channels
+        unmatched_channels = new_channel_set - self.known_channels
+        return MappedChannelData(
+            new_channels=new_channels,
+            channel_differences=differences,
+            matched_channels=matched_channels,
+            unmatched_channels=unmatched_channels,
+        )
 
 
 def get_channel_names(image: tifffile.TiffFile) -> list[str]:
@@ -59,22 +97,24 @@ def convert_expr_image(expr_image: Path):
     orig_channels = get_channel_names(e)
     print("Original channel names:")
     pprint(orig_channels)
-    channels = mapper.map_channel_names(orig_channels)
+    mapping_data = mapper.map_channel_names(orig_channels)
     print("Adjusted channel names:")
-    pprint(channels)
+    pprint(mapping_data.new_channels)
 
-    # TODO: track this more directly
-    differences = []
-    for orig_ch, new_ch in zip(orig_channels, channels):
-        if orig_ch != new_ch:
-            differences.append((orig_ch, new_ch))
-    if differences:
+    if mapping_data.channel_differences:
         print("Differences (old → new):")
-        for orig_ch, new_ch in differences:
-            print(orig_ch, "→", new_ch)
+        for orig_ch, new_ch in mapping_data.channel_differences:
+            print(f"\t{orig_ch} → {new_ch}")
+
+    print(MATCHED_COLOR + "Matched channels:" + NO_COLOR)
+    for c in sorted(mapping_data.matched_channels):
+        print(MATCHED_COLOR + f"\t{c}" + NO_COLOR)
+    print(UNMATCHED_COLOR + "Unmatched channels:" + NO_COLOR)
+    for c in sorted(mapping_data.unmatched_channels):
+        print(UNMATCHED_COLOR + "\t{c}" + NO_COLOR)
 
     with open("markers.txt", "w") as f:
-        for c in channels:
+        for c in mapping_data.new_channels:
             print(c, file=f)
     image_data = e.asarray()
     print("Original expression shape:", image_data.shape)
@@ -94,9 +134,10 @@ def convert_mask_image(mask_image: Path):
     else:
         raise ValueError("No cell channel found in mask")
     mask_data = m.asarray()
-    print("Mask shape:", mask_data.shape)
+    print("Original mask shape:", mask_data.shape)
     squeezed = mask_data.squeeze()
     cell_mask = squeezed[i]
+    print("New cell mask shape:", cell_mask.shape)
     tifffile.imwrite("mask.tiff", cell_mask)
 
 

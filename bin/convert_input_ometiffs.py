@@ -111,7 +111,7 @@ def convert_expr_image(expr_image: Path):
         print(MATCHED_COLOR + f"\t{c}" + NO_COLOR)
     print(UNMATCHED_COLOR + "Unmatched channels:" + NO_COLOR)
     for c in sorted(mapping_data.unmatched_channels):
-        print(UNMATCHED_COLOR + "\t{c}" + NO_COLOR)
+        print(UNMATCHED_COLOR + f"\t{c}" + NO_COLOR)
 
     with open("markers.txt", "w") as f:
         for c in mapping_data.new_channels:

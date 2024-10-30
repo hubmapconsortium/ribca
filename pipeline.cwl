@@ -30,7 +30,6 @@ steps:
     in:
       expr_input: image_file
       mask_input: mask_file
-      hyperparameters_file: hyperparameters_file
     out:
       - marker_list_file
       - image_file
@@ -42,4 +41,5 @@ steps:
       marker_list_file: pre-convert/marker_list_file
       image_file: pre-convert/image_file
       mask_file: pre-convert/mask_file
+      hyperparameters_file: hyperparameters_file
     out: [results_dir]

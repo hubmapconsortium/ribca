@@ -24,7 +24,6 @@ inputs:
     type: File?
     inputBinding:
       position: 3
-      prefix: "--hyperparameters_path"
 
 outputs:
   results_dir:

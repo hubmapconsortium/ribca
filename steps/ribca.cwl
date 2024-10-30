@@ -20,6 +20,11 @@ inputs:
     type: File
     inputBinding:
       position: 2
+  hyperparameters_file:
+    type: File
+    inputBinding:
+      position: 3
+      prefix: "--hyperparameters_file"
 
 outputs:
   results_dir:

@@ -7,6 +7,8 @@ inputs:
     type: File
   mask_file:
     type: File
+  hyperparameters_file:
+    type: File?
 
 outputs:
   ribca_results_dir:
@@ -28,6 +30,7 @@ steps:
     in:
       expr_input: image_file
       mask_input: mask_file
+      hyperparameters_file: hyperparameters_file
     out:
       - marker_list_file
       - image_file

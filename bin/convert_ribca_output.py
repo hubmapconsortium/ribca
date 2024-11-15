@@ -33,8 +33,8 @@ def convert_ribca_output(results_dir: Path):
     votes_df = pd.DataFrame(votes, index=vote_ids).sort_index()
 
     with pd.HDFStore("results.hdf5") as store:
-        store["annotations"] = df
-        store["votes"] = votes_df
+        store.put("annotations", df, format="table")
+        store.put("votes", votes_df)
 
 
 if __name__ == "__main__":

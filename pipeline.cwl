@@ -14,6 +14,9 @@ outputs:
   ribca_results_dir:
     type: Directory
     outputSource: ribca/results_dir
+  results_hdf5:
+    type: File
+    outputSource: post-convert/results_hdf5
   converted_expr:
     type: File
     outputSource: pre-convert/image_file
@@ -43,3 +46,9 @@ steps:
       mask_file: pre-convert/mask_file
       hyperparameters_file: hyperparameters_file
     out: [results_dir]
+
+  post-convert:
+    run: steps/post-convert.cwl
+    in:
+      ribca_results_dir: ribca/results_dir
+    out: [results_hdf5]

@@ -2,6 +2,7 @@ FROM continuumio/miniconda3:24.7.1-0
 
 RUN conda install -y \
     lxml \
+    pandas \
     tifffile \
  && conda clean --all
 

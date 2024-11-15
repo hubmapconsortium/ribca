@@ -5,6 +5,9 @@ requirements:
   DockerRequirement:
     dockerPull: hubmap/ribca
   DockerGpuRequirement: {}
+  EnvVarRequirement:
+    envDef:
+      CUDA_VISIBLE_DEVICES: "0"
 baseCommand: ["python", "-m", "cell_type_annotation"]
 
 inputs:

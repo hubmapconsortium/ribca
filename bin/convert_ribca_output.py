@@ -24,7 +24,7 @@ def convert_ribca_output(results_dir: Path):
 
     vote_ids = []
     votes = []
-    with open("headless_votes_0.txt") as f:
+    with open(results_dir / "headless_votes_0.txt") as f:
         for line in f:
             cell_id_str, cell_votes_str = line.strip().split(",", 1)
             cell_votes = literal_eval(cell_votes_str)

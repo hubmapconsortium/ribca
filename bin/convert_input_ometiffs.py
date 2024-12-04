@@ -195,10 +195,6 @@ def main(directory: Path):
 if __name__ == "__main__":
     p = ArgumentParser()
     p.add_argument("directory", type=Path)
-
-    p.add_argument("expr_image", type=Path)
-    p.add_argument("mask_image", type=Path)
     args = p.parse_args()
 
-    convert_expr_image(args.expr_image)
-    convert_mask_image(args.mask_image)
+    main(args.directory)

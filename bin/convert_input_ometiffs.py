@@ -12,8 +12,8 @@ import tifffile
 from ome_utils import find_ome_tiffs
 
 MATCHED_COLOR = "\033[01;32m"
-UNMATCHED_COLOR = "\033[01;34m"
-NOT_PRESENT_COLOR = "\033[01;31m"
+UNMATCHED_COLOR = "\033[01;31m"
+NOT_PRESENT_COLOR = "\033[01;34m"
 NO_COLOR = "\033[00m"
 
 channel_mapping_filename = "channel_name_mapping.csv"

@@ -4,6 +4,7 @@ class: CommandLineTool
 requirements:
   DockerRequirement:
     dockerPull: hubmap/ribca-prep-convert
+  InlineJavascriptRequirement: { }
 baseCommand: "/opt/convert_input_ometiffs.py"
 
 inputs:

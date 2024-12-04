@@ -7,25 +7,15 @@ requirements:
 baseCommand: "/opt/convert_input_ometiffs.py"
 
 inputs:
-  expr_input:
-    type: File
+  directory:
+    type: Directory
     inputBinding:
       position: 0
-  mask_input:
-    type: File
-    inputBinding:
-      position: 1
 
 outputs:
-  marker_list_file:
-    type: File
+  image_directories:
+    type: Directory[]
     outputBinding:
-      glob: markers.txt
-  image_file:
-    type: File
-    outputBinding:
-      glob: expr.tiff
-  mask_file:
-    type: File
-    outputBinding:
-      glob: mask.tiff
+      glob: manifest.json
+      loadContents: True
+      outputEval: $(eval(self[0].contents))

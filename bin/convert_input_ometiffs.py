@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 import csv
+import json
 from argparse import ArgumentParser
+from os import fspath
 from pathlib import Path
 from pprint import pprint
-from typing import NamedTuple
+from typing import Iterable, NamedTuple
 
 import lxml.etree
 import tifffile
+from ome_utils import find_ome_tiffs
 
 MATCHED_COLOR = "\033[01;32m"
-UNMATCHED_COLOR = "\033[01;31m"
+UNMATCHED_COLOR = "\033[01;34m"
+NOT_PRESENT_COLOR = "\033[01;31m"
 NO_COLOR = "\033[00m"
 
 channel_mapping_filename = "channel_name_mapping.csv"
@@ -18,6 +22,28 @@ data_dir_possibilities = [
     Path("/opt"),
     Path(__file__).parent / "data",
 ]
+
+
+def get_directory_manifest(directories: Iterable[Path]):
+    manifest = [
+        {
+            "class": "Directory",
+            "path": fspath(directory),
+            "basename": directory.name,
+        }
+        for directory in directories
+    ]
+    return manifest
+
+
+def get_ome_tiff_paths(input_dir: Path) -> Iterable[tuple[Path, Path]]:
+    """
+    Yields 2-tuples:
+     [0] full Path to source file
+     [1] output file Path (source file relative to input_dir)
+    """
+    for ome_tiff in find_ome_tiffs(input_dir):
+        yield ome_tiff, ome_tiff.relative_to(input_dir)
 
 
 def find_data_dir() -> Path:
@@ -36,6 +62,7 @@ class MappedChannelData(NamedTuple):
     channel_differences: set[tuple[str, str]]
     matched_channels: set[str]
     unmatched_channels: set[str]
+    not_present_channels: set[str]
 
 
 class ChannelMapper:
@@ -73,11 +100,13 @@ class ChannelMapper:
         new_channel_set = set(new_channels)
         matched_channels = new_channel_set & self.known_channels
         unmatched_channels = new_channel_set - self.known_channels
+        not_present_channels = self.known_channels - new_channel_set
         return MappedChannelData(
             new_channels=new_channels,
             channel_differences=differences,
             matched_channels=matched_channels,
             unmatched_channels=unmatched_channels,
+            not_present_channels=not_present_channels,
         )
 
 
@@ -90,7 +119,7 @@ def get_channel_names(image: tifffile.TiffFile) -> list[str]:
     return channels
 
 
-def convert_expr_image(expr_image: Path):
+def convert_expr_image(expr_image: Path, output_dir: Path):
     print("Reading", expr_image)
     e = tifffile.TiffFile(expr_image)
     mapper = ChannelMapper()
@@ -112,6 +141,9 @@ def convert_expr_image(expr_image: Path):
     print(UNMATCHED_COLOR + "Unmatched channels:" + NO_COLOR)
     for c in sorted(mapping_data.unmatched_channels):
         print(UNMATCHED_COLOR + f"\t{c}" + NO_COLOR)
+    print(NOT_PRESENT_COLOR + "RIBCA channels not in dataset:" + NO_COLOR)
+    for c in sorted(mapping_data.not_present_channels):
+        print(NOT_PRESENT_COLOR + f"\t{c}" + NO_COLOR)
 
     with open("markers.txt", "w") as f:
         for c in mapping_data.new_channels:
@@ -121,10 +153,10 @@ def convert_expr_image(expr_image: Path):
     squeezed = image_data.squeeze()
     print("New expression shape:", squeezed.shape)
     assert len(squeezed.shape) == 3, "Need only CYX dimensions"
-    tifffile.imwrite("expr.tiff", squeezed)
+    tifffile.imwrite(output_dir / "expr.tiff", squeezed)
 
 
-def convert_mask_image(mask_image: Path):
+def convert_mask_image(mask_image: Path, output_dir: Path):
     print("Reading", mask_image)
     m = tifffile.TiffFile(mask_image)
     channels = get_channel_names(m)
@@ -138,11 +170,32 @@ def convert_mask_image(mask_image: Path):
     squeezed = mask_data.squeeze()
     cell_mask = squeezed[i]
     print("New cell mask shape:", cell_mask.shape)
-    tifffile.imwrite("mask.tiff", cell_mask)
+    tifffile.imwrite(output_dir / "mask.tiff", cell_mask)
+
+
+def main(directory: Path):
+    pipeline_output_dir = directory / "pipeline_output"
+    exprs = sorted(find_ome_tiffs(pipeline_output_dir / "expr"))
+    masks = sorted(find_ome_tiffs(pipeline_output_dir / "mask"))
+
+    directories = []
+    for expr, mask in zip(exprs, masks):
+        basename = expr.name.rsplit(".", 2)[0]
+        image_dir = Path(basename)
+        directories.append(image_dir)
+        image_dir.mkdir()
+
+        convert_expr_image(expr, image_dir)
+        convert_mask_image(mask, image_dir)
+
+    with open("manifest.json", "w") as f:
+        json.dump(get_directory_manifest(directories), f)
 
 
 if __name__ == "__main__":
     p = ArgumentParser()
+    p.add_argument("directory", type=Path)
+
     p.add_argument("expr_image", type=Path)
     p.add_argument("mask_image", type=Path)
     args = p.parse_args()

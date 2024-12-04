@@ -5,7 +5,8 @@ RUN conda install -y \
     pandas \
     pytables \
     tifffile \
- && conda clean --all
+ && conda clean --all \
+ && pip --no-cache-dir install hubmap-ome-utils==0.3.4
 
 WORKDIR /opt
 COPY data /opt

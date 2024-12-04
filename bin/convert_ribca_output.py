@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 
-def convert_ribca_output(results_dir: Path):
+def read_ribca_output(results_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     annotations = pd.read_csv(
         results_dir / "headless_annotation_0.txt",
         index_col=0,
@@ -32,14 +32,21 @@ def convert_ribca_output(results_dir: Path):
             votes.append(cell_votes)
     votes_df = pd.DataFrame(votes, index=vote_ids).sort_index()
 
-    with pd.HDFStore("results.hdf5") as store:
+    return df, votes_df
+
+
+def convert_ribca_output(results_dir: Path):
+    df, votes_df = read_ribca_output(results_dir)
+
+    with pd.HDFStore(results_dir / "results.hdf5") as store:
         store.put("annotations", df, format="table")
         store.put("votes", votes_df)
 
 
 if __name__ == "__main__":
     p = ArgumentParser()
-    p.add_argument("results_dir", type=Path)
+    p.add_argument("results_dir", type=Path, nargs="+")
     args = p.parse_args()
 
-    convert_ribca_output(args.results_dir)
+    for directory in args.results_dir:
+        convert_ribca_output(directory)

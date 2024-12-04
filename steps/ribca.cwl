@@ -4,29 +4,21 @@ class: CommandLineTool
 requirements:
   DockerRequirement:
     dockerPull: hubmap/ribca
-  DockerGpuRequirement: {}
+  #DockerGpuRequirement: {}
   EnvVarRequirement:
     envDef:
       CUDA_VISIBLE_DEVICES: "0"
 baseCommand: ["python", "-m", "cell_type_annotation"]
 
 inputs:
-  marker_list_file:
-    type: File
+  directory:
+    type: Directory
     inputBinding:
       position: 0
-  image_file:
-    type: File
-    inputBinding:
-      position: 1
-  mask_file:
-    type: File
-    inputBinding:
-      position: 2
   hyperparameters_file:
     type: File?
     inputBinding:
-      position: 3
+      position: 1
 
 outputs:
   results_dir:

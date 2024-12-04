@@ -8,12 +8,16 @@ baseCommand: "/opt/convert_ribca_output.py"
 
 inputs:
   ribca_results_dir:
-    type: Directory
+    type: Directory[]
     inputBinding:
       position: 0
 
 outputs:
   results_hdf5:
-    type: File
+    type: File[]
     outputBinding:
-      glob: "results.hdf5"
+      glob: "*/results.hdf5"
+  results_csv_dir:
+    type: Directory
+    outputBinding:
+      glob: "ribca"

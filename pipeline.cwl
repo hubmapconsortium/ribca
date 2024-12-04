@@ -1,49 +1,35 @@
 #!/usr/bin/env cwl-runner
 class: Workflow
 cwlVersion: v1.1
+requirements:
+  ScatterFeatureRequirement: {}
 
 inputs:
-  image_file:
-    type: File
-  mask_file:
-    type: File
+  input_directory:
+    type: Directory
   hyperparameters_file:
     type: File?
 
 outputs:
-  ribca_results_dir:
-    type: Directory
-    outputSource: ribca/results_dir
   results_hdf5:
-    type: File
+    type: File[]
     outputSource: post-convert/results_hdf5
-  converted_expr:
-    type: File
-    outputSource: pre-convert/image_file
-  converted_mask:
-    type: File
-    outputSource: pre-convert/mask_file
-  marker_list:
-    type: File
-    outputSource: pre-convert/marker_list_file
+  results_csv_dir:
+    type: Directory
 
 steps:
   pre-convert:
     run: steps/pre-convert.cwl
     in:
-      expr_input: image_file
-      mask_input: mask_file
+      directory: input_directory
     out:
-      - marker_list_file
-      - image_file
-      - mask_file
+      - image_directories
 
   ribca:
     run: steps/ribca.cwl
+    scatter: directory
     in:
-      marker_list_file: pre-convert/marker_list_file
-      image_file: pre-convert/image_file
-      mask_file: pre-convert/mask_file
+      directory: pre-convert/image_directories
       hyperparameters_file: hyperparameters_file
     out: [results_dir]
 
@@ -51,4 +37,4 @@ steps:
     run: steps/post-convert.cwl
     in:
       ribca_results_dir: ribca/results_dir
-    out: [results_hdf5]
+    out: [results_hdf5, results_csv_dir]

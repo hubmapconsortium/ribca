@@ -40,7 +40,7 @@ def convert_ribca_output(results_dir: Path):
     df, votes_df = read_ribca_output(results_dir)
     with open(results_dir / "image_name.txt") as f:
         image_name = f.read().strip()
-    with pd.HDFStore(f"{image_name}.hdf5") as store:
+    with pd.HDFStore(f"ribca_{image_name}.hdf5") as store:
         store.put("annotations", df, format="table")
         store.put("votes", votes_df)
     ribca_dir = Path("ribca")

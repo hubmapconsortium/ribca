@@ -16,7 +16,7 @@ outputs:
   results_hdf5:
     type: File[]
     outputBinding:
-      glob: "*/results.hdf5"
+      glob: "*.hdf5"
   results_csv_dir:
     type: Directory
     outputBinding:

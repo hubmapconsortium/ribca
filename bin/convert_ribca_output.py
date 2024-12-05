@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 from ast import literal_eval
 from pathlib import Path
+from shutil import copy
 
 import pandas as pd
 
@@ -37,10 +38,16 @@ def read_ribca_output(results_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def convert_ribca_output(results_dir: Path):
     df, votes_df = read_ribca_output(results_dir)
-
-    with pd.HDFStore(results_dir / "results.hdf5") as store:
+    with open(results_dir / "image_name.txt") as f:
+        image_name = f.read().strip()
+    image_dir = Path(image_name)
+    image_dir.mkdir(exist_ok=True, parents=True)
+    with pd.HDFStore(image_dir / "results.hdf5") as store:
         store.put("annotations", df, format="table")
         store.put("votes", votes_df)
+    ribca_dir = Path("ribca")
+    ribca_dir.mkdir(exist_ok=True, parents=True)
+    copy(results_dir / "headless_annotation_0.txt", ribca_dir / f"{image_name}.csv")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ class: CommandLineTool
 requirements:
   DockerRequirement:
     dockerPull: hubmap/ribca
-  #DockerGpuRequirement: {}
+  DockerGpuRequirement: {}
   EnvVarRequirement:
     envDef:
       CUDA_VISIBLE_DEVICES: "0"

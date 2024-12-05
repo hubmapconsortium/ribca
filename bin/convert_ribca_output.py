@@ -40,12 +40,14 @@ def convert_ribca_output(results_dir: Path):
     df, votes_df = read_ribca_output(results_dir)
     with open(results_dir / "image_name.txt") as f:
         image_name = f.read().strip()
-    with pd.HDFStore(f"ribca_{image_name}.hdf5") as store:
+    print("Writing results in HDF5 format to", (hdf5_path := f"ribca_{image_name}.hdf5"))
+    with pd.HDFStore(hdf5_path) as store:
         store.put("annotations", df, format="table")
         store.put("votes", votes_df)
     ribca_dir = Path("ribca")
     ribca_dir.mkdir(exist_ok=True, parents=True)
-    copy(results_dir / "headless_annotation_0.txt", ribca_dir / f"{image_name}.csv")
+    print("Copying CSV annotation results to", (csv_path := ribca_dir / f"{image_name}.csv"))
+    copy(results_dir / "headless_annotation_0.txt", csv_path)
 
 
 if __name__ == "__main__":

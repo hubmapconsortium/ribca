@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from ast import literal_eval
 from pathlib import Path
-from shutil import copy
+from shutil import copy, copytree
 
 import pandas as pd
 
@@ -37,16 +37,25 @@ def read_ribca_output(results_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def convert_ribca_output(results_dir: Path):
-    df, votes_df = read_ribca_output(results_dir)
+    ribca_results_dir = Path("ribca_results")
     with open(results_dir / "image_name.txt") as f:
         image_name = f.read().strip()
-    print("Writing results in HDF5 format to", (hdf5_path := f"ribca_{image_name}.hdf5"))
+    ribca_results_subdir = ribca_results_dir / image_name
+    ribca_results_subdir.mkdir(exist_ok=True, parents=True)
+    copytree(results_dir, ribca_results_subdir)
+
+    df, votes_df = read_ribca_output(results_dir)
+    print(
+        "Writing results in HDF5 format to",
+        (hdf5_path := ribca_results_subdir / "ribca_results.hdf5"),
+    )
     with pd.HDFStore(hdf5_path) as store:
         store.put("annotations", df, format="table")
         store.put("votes", votes_df)
-    ribca_dir = Path("ribca")
-    ribca_dir.mkdir(exist_ok=True, parents=True)
-    print("Copying CSV annotation results to", (csv_path := ribca_dir / f"{image_name}.csv"))
+
+    sprm_dir = Path("ribca_for_sprm")
+    sprm_dir.mkdir(exist_ok=True, parents=True)
+    print("Copying CSV annotation results to", (csv_path := sprm_dir / f"{image_name}.csv"))
     copy(results_dir / "headless_annotation_0.txt", csv_path)
 
 

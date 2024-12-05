@@ -11,11 +11,12 @@ inputs:
     type: File?
 
 outputs:
-  results_hdf5:
-    type: File[]
-    outputSource: post-convert/results_hdf5
-  results_csv_dir:
+  ribca_results_full:
     type: Directory
+    outputSource: post-convert/ribca_results_full
+  ribca_results_for_sprm:
+    type: Directory
+    outputSource: post-convert/ribca_results_for_sprm
 
 steps:
   pre-convert:
@@ -37,4 +38,4 @@ steps:
     run: steps/post-convert.cwl
     in:
       ribca_results_dir: ribca/results_dir
-    out: [results_hdf5, results_csv_dir]
+    out: [ribca_results_full, ribca_results_for_sprm]

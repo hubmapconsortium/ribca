@@ -13,11 +13,11 @@ inputs:
       position: 0
 
 outputs:
-  results_hdf5:
-    type: File[]
-    outputBinding:
-      glob: "*.hdf5"
-  results_csv_dir:
+  ribca_results_full:
     type: Directory
     outputBinding:
-      glob: "ribca"
+      glob: "ribca_results"
+  ribca_results_for_sprm:
+    type: Directory
+    outputBinding:
+      glob: "ribca_for_sprm"

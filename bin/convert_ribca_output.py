@@ -42,7 +42,7 @@ def convert_ribca_output(results_dir: Path):
         image_name = f.read().strip()
     ribca_results_subdir = ribca_results_dir / image_name
     ribca_results_subdir.mkdir(exist_ok=True, parents=True)
-    copytree(results_dir, ribca_results_subdir)
+    copytree(results_dir, ribca_results_subdir, dirs_exist_ok=True)
 
     df, votes_df = read_ribca_output(results_dir)
     print(

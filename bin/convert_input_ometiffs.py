@@ -77,6 +77,8 @@ class ChannelMapper:
             r = csv.reader(f)
             for row in r:
                 self.mapping[row[0]] = row[1]
+        print("Loaded channel name mapping:")
+        pprint(self.mapping)
 
         self.known_channels = set()
         with open(data_dir / known_channels_filename) as f:

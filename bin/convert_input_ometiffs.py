@@ -175,10 +175,18 @@ def convert_mask_image(mask_image: Path, output_dir: Path):
     tifffile.imwrite(output_dir / "mask.tiff", cell_mask)
 
 
+def find_expr_mask_dir(base_dir: Path) -> tuple[Path, Path]:
+    if (d := base_dir / "pipeline_output").is_dir():
+        return d / "expr", d / "mask"
+    if (d := base_dir / "stitched").is_dir():
+        return d / "expressions", d / "mask"
+    raise ValueError("Couldn't find image and mask directories")
+
+
 def main(directory: Path):
-    pipeline_output_dir = directory / "pipeline_output"
-    exprs = sorted(find_ome_tiffs(pipeline_output_dir / "expr"))
-    masks = sorted(find_ome_tiffs(pipeline_output_dir / "mask"))
+    expr_dir, mask_dir = find_expr_mask_dir(directory)
+    exprs = sorted(find_ome_tiffs(expr_dir))
+    masks = sorted(find_ome_tiffs(mask_dir))
 
     directories = []
     for expr, mask in zip(exprs, masks):

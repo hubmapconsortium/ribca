@@ -5,7 +5,7 @@ requirements:
   ScatterFeatureRequirement: {}
 
 inputs:
-  input_directory:
+  data_dir:
     type: Directory
   hyperparameters_file:
     type: File?
@@ -22,7 +22,7 @@ steps:
   pre-convert:
     run: steps/pre-convert.cwl
     in:
-      directory: input_directory
+      directory: data_dir
     out:
       - image_directories
 

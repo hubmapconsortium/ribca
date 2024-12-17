@@ -3,7 +3,7 @@ cwlVersion: v1.1
 class: CommandLineTool
 requirements:
   DockerRequirement:
-    dockerPull: hubmap/ribca-prep-convert
+    dockerPull: hubmap/ribca-prep-convert:1.0
   InlineJavascriptRequirement: { }
 baseCommand: "/opt/convert_input_ometiffs.py"
 

@@ -1,0 +1,3 @@
+[submodule "ribca"]
+	path = ribca
+	url = https://github.com/mruffalo/multiplexed-image-annotator

@@ -3,6 +3,9 @@ CHGA,GFAP
 CD38,CD138
 CD3e,CD3
 panCK,PanCK
+Pan-Cytokeratin,PanCK
+FOXP3,FoxP3
+SMA,aSMA
 Cytokeratin,PanCK
 SMActin,aSMA
 HOECHST1,DAPI

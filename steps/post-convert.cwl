@@ -3,7 +3,7 @@ cwlVersion: v1.1
 class: CommandLineTool
 requirements:
   DockerRequirement:
-    dockerPull: hubmap/ribca-prep-convert:1.0
+    dockerPull: hubmap/ribca-prep-convert
 baseCommand: "/opt/convert_ribca_output.py"
 
 inputs:

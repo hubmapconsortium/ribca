@@ -3,7 +3,7 @@ cwlVersion: v1.1
 class: CommandLineTool
 requirements:
   DockerRequirement:
-    dockerPull: hubmap/ribca:1.0
+    dockerPull: hubmap/ribca
   DockerGpuRequirement: {}
   EnvVarRequirement:
     envDef:

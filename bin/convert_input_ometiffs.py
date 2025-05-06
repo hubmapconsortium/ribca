@@ -9,19 +9,13 @@ from typing import Iterable, NamedTuple
 
 import lxml.etree
 import tifffile
+from common import channel_mapping_filename, find_data_dir, known_channels_filename
 from ome_utils import find_ome_tiffs
 
 MATCHED_COLOR = "\033[01;32m"
 UNMATCHED_COLOR = "\033[01;31m"
 NOT_PRESENT_COLOR = "\033[01;34m"
 NO_COLOR = "\033[00m"
-
-channel_mapping_filename = "channel_name_mapping.csv"
-known_channels_filename = "ribca_known_channels.txt"
-data_dir_possibilities = [
-    Path("/opt"),
-    Path(__file__).parent / "data",
-]
 
 
 def get_directory_manifest(directories: Iterable[Path]):
@@ -44,17 +38,6 @@ def get_ome_tiff_paths(input_dir: Path) -> Iterable[tuple[Path, Path]]:
     """
     for ome_tiff in find_ome_tiffs(input_dir):
         yield ome_tiff, ome_tiff.relative_to(input_dir)
-
-
-def find_data_dir() -> Path:
-    for path in data_dir_possibilities:
-        if (path / channel_mapping_filename).is_file() and (
-            path / known_channels_filename
-        ).is_file():
-            return path
-    message_pieces = [f"Couldn't find data directory; tried:"]
-    message_pieces.extend([f"\t{path}" for path in data_dir_possibilities])
-    raise FileNotFoundError("\n".join(message_pieces))
 
 
 class MappedChannelData(NamedTuple):

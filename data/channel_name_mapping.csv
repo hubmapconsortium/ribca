@@ -7,6 +7,10 @@ Pan-Cytokeratin,PanCK
 FOXP3,FoxP3
 SMA,aSMA
 Cytokeratin,PanCK
+ASMA,aSMA
 SMActin,aSMA
 HOECHST1,DAPI
 Hoechst1,DAPI
+VIM,Vimentin
+CD11C,CD11c
+MastCellTryptase,Tryptase

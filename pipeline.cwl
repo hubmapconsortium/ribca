@@ -17,7 +17,6 @@ outputs:
   ribca_results_for_sprm:
     type: Directory
     outputSource: post-convert/ribca_results_for_sprm
-
 steps:
   pre-convert:
     run: steps/pre-convert.cwl
@@ -39,3 +38,5 @@ steps:
     in:
       ribca_results_dir: ribca/results_dir
     out: [ribca_results_full, ribca_results_for_sprm]
+  
+

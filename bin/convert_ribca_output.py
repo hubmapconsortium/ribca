@@ -19,9 +19,9 @@ def read_clid_mapping():
 
 def map_to_clid(annotations):
     cl_label_map, cl_id_map = read_clid_mapping()
-    annotations['CL_Label'] = annotations['RIBCA_CellType'].map(cl_label_map)
-    annotations['CL_ID'] = annotations['RIBCA_CellType'].map(cl_id_map)
-    annotations['CL_ID'] = annotations['CL_ID'].fillna('CL:0000000')
+    annotations['RIBCA_CL_Label'] = annotations['RIBCA_CellType'].map(cl_label_map)
+    annotations['RIBCA_CL_ID'] = annotations['RIBCA_CellType'].map(cl_id_map)
+    annotations['RIBCA_CL_ID'] = annotations['CL_ID'].fillna('CL:0000000')
 
     return annotations
 
@@ -29,7 +29,7 @@ def map_to_clid(annotations):
 def create_cell_type_manifest(df, outdir):
     cell_type_manifest_dict = {}
 
-    for column_header in ['RIBCA_CellType', 'CL_ID']:
+    for column_header in ['RIBCA_CellType', 'RIBCA_CL_ID']:
         sub_dict = {
             val: int((df[column_header] == val).sum())
             for val in df[column_header].unique()
@@ -86,7 +86,6 @@ def convert_ribca_output(results_dir: Path):
 
     df, votes_df = read_ribca_output(results_dir)
     create_cell_type_manifest(df, ribca_results_subdir)
-    #!TODO! should i cite hra somewhere here
     print(
         "Writing results in HDF5 format to",
         (hdf5_path := ribca_results_subdir / "ribca_results.hdf5"),
@@ -98,7 +97,7 @@ def convert_ribca_output(results_dir: Path):
     sprm_dir = Path("ribca_for_sprm")
     sprm_dir.mkdir(exist_ok=True, parents=True)
     print("Writing CSV annotation results to", (csv_path := sprm_dir / f"{image_name}.csv"))
-    df["CL_ID"].to_csv(csv_path)
+    df["RIBCA_CL_ID"].to_csv(csv_path)
 
 
 if __name__ == "__main__":

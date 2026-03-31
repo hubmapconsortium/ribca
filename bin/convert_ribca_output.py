@@ -42,6 +42,17 @@ def create_cell_type_manifest(df, outdir):
         json.dump(cell_type_manifest_dict, f)
 
 
+def write_cl_mapping(df, outdir):
+    mapping = df[['RIBCA_CellType', 'RIBCA_CL_ID']].drop_duplicates(subset=['RIBCA_CellType'])
+    mapping.set_index('RIBCA_CellType')
+    mapping_dict = {}
+    for i, j in zip(mapping['RIBCA_CellType'].to_list(), mapping['RIBCA_CL_ID'].to_list()):
+        mapping_dict[i] = j
+    json_path = outdir / "cl_mapping.json"
+    with open(json_path, 'w') as f:
+        json.dump(mapping_dict, f)
+
+
 def read_ribca_output(
     results_dir: Path
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -60,7 +71,6 @@ def read_ribca_output(
     )
 
     annotations = map_to_clid(annotations)
-
     df = pd.concat([annotations, confidence, thresholds], axis=1).sort_index()
 
     vote_ids = []
@@ -97,7 +107,9 @@ def convert_ribca_output(results_dir: Path):
     sprm_dir = Path("ribca_for_sprm")
     sprm_dir.mkdir(exist_ok=True, parents=True)
     print("Writing CSV annotation results to", (csv_path := sprm_dir / f"{image_name}.csv"))
-    df["RIBCA_CL_ID"].to_csv(csv_path)
+    df["RIBCA_CL_ID"].to_csv(csv_path, index=False)
+    # Write a CLID mapping json for portal
+    write_cl_mapping(df, ribca_results_dir)
 
 
 if __name__ == "__main__":

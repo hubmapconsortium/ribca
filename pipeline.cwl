@@ -38,5 +38,3 @@ steps:
     in:
       ribca_results_dir: ribca/results_dir
     out: [ribca_results_full, ribca_results_for_sprm]
-  
-

@@ -7,7 +7,7 @@ requirements:
   DockerGpuRequirement: {}
   EnvVarRequirement:
     envDef:
-      CUDA_VISIBLE_DEVICES: "0"
+      CUDA_VISIBLE_DEVICES: "6"
 baseCommand: ["python", "-m", "cell_type_annotation"]
 
 inputs:

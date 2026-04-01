@@ -11,7 +11,7 @@ RUN conda config --add channels defaults \
     mkl=2023.1.0 \
  && conda install -y \
     -c conda-forge \
-    timm \
+    timm=1.0.12 \
     gdown \
     umap-learn \
  && conda install -y \

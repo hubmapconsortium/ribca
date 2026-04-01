@@ -8,6 +8,7 @@ RUN conda config --add channels defaults \
     torchvision \
     torchaudio \
     pytorch-cuda=11.8 \
+    mkl=2023.1.0 \
  && conda install -y \
     -c conda-forge \
     timm \

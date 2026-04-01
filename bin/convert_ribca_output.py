@@ -21,7 +21,7 @@ def map_to_clid(annotations):
     cl_label_map, cl_id_map = read_clid_mapping()
     annotations['RIBCA_CL_Label'] = annotations['RIBCA_CellType'].map(cl_label_map)
     annotations['RIBCA_CL_ID'] = annotations['RIBCA_CellType'].map(cl_id_map)
-    annotations['RIBCA_CL_ID'] = annotations['CL_ID'].fillna('CL:0000000')
+    annotations['RIBCA_CL_ID'] = annotations['RIBCA_CL_ID'].fillna('CL:0000000')
 
     return annotations
 

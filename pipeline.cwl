@@ -17,7 +17,6 @@ outputs:
   ribca_results_for_sprm:
     type: Directory
     outputSource: post-convert/ribca_results_for_sprm
-
 steps:
   pre-convert:
     run: steps/pre-convert.cwl

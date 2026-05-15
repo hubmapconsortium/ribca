@@ -3,11 +3,11 @@ cwlVersion: v1.1
 class: CommandLineTool
 requirements:
   DockerRequirement:
-    dockerPull: hubmap/ribca
+    dockerPull: hubmap/ribca:latest
   DockerGpuRequirement: {}
   EnvVarRequirement:
     envDef:
-      CUDA_VISIBLE_DEVICES: "0"
+      CUDA_VISIBLE_DEVICES: "6"
 baseCommand: ["python", "-m", "cell_type_annotation"]
 
 inputs:
